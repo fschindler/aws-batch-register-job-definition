@@ -10,7 +10,7 @@ async function run(): Promise<void> {
     })
 
     // Get inputs
-    const jobDefinitionFile = core.getInput('task-definition', {required: true})
+    const jobDefinitionFile = core.getInput('job-definition', {required: true})
 
     // Register the job definition
     core.debug('Registering the job definition')

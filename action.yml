@@ -1,10 +1,13 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'aws-batch-register-job-definition'
+description: 'Provide a description here' # TODO
+author: 'Felix Schindler'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  job-definition:
+    description: 'The path to the Batch job definition file to register'
+    required: true
+outputs:
+  job-definition-arn:
+    description: 'The ARN of the registered Batch job definition'
 runs:
   using: 'node12'
   main: 'dist/index.js'

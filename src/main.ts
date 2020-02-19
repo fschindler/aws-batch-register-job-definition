@@ -1,16 +1,29 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import path from 'path'
+import fs from 'fs'
+import aws from 'aws-sdk'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const batch = new aws.Batch({
+      customUserAgent: 'aws-batch-register-job-definition-for-github-actions'
+    })
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    // Get inputs
+    const jobDefinitionFile = core.getInput('task-definition', {required: true})
 
-    core.setOutput('time', new Date().toTimeString())
+    // Register the job definition
+    core.debug('Registering the job definition')
+    const jobDefPath = path.isAbsolute(jobDefinitionFile)
+      ? jobDefinitionFile
+      : path.join(process.env.GITHUB_WORKSPACE || '', jobDefinitionFile)
+    const fileContents = fs.readFileSync(jobDefPath, 'utf8')
+    const jobDefContents = JSON.parse(fileContents)
+    const registerResponse = await batch
+      .registerJobDefinition(jobDefContents)
+      .promise()
+    const jobDefArn = registerResponse.jobDefinitionArn
+    core.setOutput('job-definition-arn', jobDefArn)
   } catch (error) {
     core.setFailed(error.message)
   }

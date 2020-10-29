@@ -4,9 +4,9 @@
 
 # Create a JavaScript Action using TypeScript
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+Use this template to bootstrap the creation of a TypeScript action.:rocket:
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
 
 If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
 
@@ -21,9 +21,9 @@ Install the dependencies
 $ npm install
 ```
 
-Build the typescript
+Build the typescript and package it for distribution
 ```bash
-$ npm run build
+$ npm run build && npm run package
 ```
 
 Run the tests :heavy_check_mark:  
@@ -70,22 +70,12 @@ See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/R
 
 ## Publish to a distribution branch
 
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
+Actions are run from GitHub repos so we will checkin the packed dist folder. 
 
-Comment out node_modules in .gitignore and create a releases/v1 branch
+Then run [ncc](https://github.com/zeit/ncc) and push the results:
 ```bash
-# comment out in distribution branches
-# node_modules/
-```
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ npm prune --production
-$ git add node_modules
+$ npm run package
+$ git add dist
 $ git commit -a -m "prod dependencies"
 $ git push origin releases/v1
 ```
@@ -96,10 +86,10 @@ See the [versioning documentation](https://github.com/actions/toolkit/blob/maste
 
 ## Validate
 
-You can now validate the action by referencing the releases/v1 branch
+You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
 
 ```yaml
-uses: actions/typescript-action@releases/v1
+uses: ./
 with:
   milliseconds: 1000
 ```
@@ -108,10 +98,4 @@ See the [actions tab](https://github.com/actions/javascript-action/actions) for 
 
 ## Usage:
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
-
-```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
-```
+After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
